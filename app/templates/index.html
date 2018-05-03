@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+{% block head %}
+{{ super() }}
+<title>{{title|with_site}}</title>
+<style>
+    body {
+        background: url(/static/img/bg.jpg) no-repeat;
+        background-size: 100% 100%;
+        overflow:hidden;
+    }
+
+    #search {
+        position:relative;
+        max-width: 700px;
+        margin: 100px auto;
+        padding: 50px;
+    }
+
+</style>
+{% endblock %}
+{% block content %}
+{% include 'comp/header.html' %}
+{% include 'comp/login.html' %}
+{% with messages = get_flashed_messages(with_categories=True) %}
+    {% if messages %}
+      {% for category, message in messages %}
+          <div class="ui {{category}} message msg-fixed-top" id="tip">
+            <i class="close icon"></i>
+            <div class="header">{{ message }}</div>
+          </div>
+      {% endfor %}
+    {% endif %}
+{% endwith %}
+<div id="search">
+    <form class="ui search" action="{{ url_for('main.search') }}" method="get" id="search">
+        <div class="ui fluid action input">
+          <input name="q" type="text" placeholder="例如:Flask">
+          <button class="ui teal button" type="submit">搜索</button>
+        </div>
+    </form>
+</div>
+
+{% endblock %}
+{% block js %}
+<script src="{{ url_for('static', filename='js/login.js') }}"></script>
+<script>
+    $(function(){
+        $('#login').login();
+
+    });
+</script>
+{% endblock %}

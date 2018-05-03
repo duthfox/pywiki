@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+{% block head %}
+{{ super() }}
+<title>{{pk1.title+' PK '+pk2.title|with_site}}</title>
+{% endblock %}
+{% block content %}
+{% include "comp/header.html" %}
+<div class="ui container" id="container">
+    <table class="ui celled table">
+      <thead>
+        <tr class="center aligned"><th>比较项</th>
+        <th><a href="{{ url_for('main.item', title=pk1.title) }}">{{pk1.title}}</a></th>
+        <th><a href="{{ url_for('main.item', title=pk2.title) }}">{{pk2.title}}</a></th>
+      </tr></thead>
+      <tbody>
+        <tr class="center aligned">
+          <td>
+            类型
+          </td>
+          <td>{{pk1.type}}</td>
+          <td>{{pk2.type}}</td>
+        </tr>
+        {% for attr_name, list in rows.items() %}
+          {{ TypeRender.render_many(attr_name, list)|safe }}
+        {% endfor %}
+      </tbody>
+    </table>
+</div>
+{% endblock %}
+{% block js %}
+
+{% endblock %}
+

@@ -1,0 +1,12 @@
+{
+  "name": "pkyx",
+  "authors": [
+    "tonnie <tonnie.lwt@gmail.com>"
+  ],
+  "description": "",
+  "main": "",
+  "moduleType": [
+    "node"
+  ],
+  "license": "MIT"
+}

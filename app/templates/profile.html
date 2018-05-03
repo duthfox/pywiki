@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+{% block head %}
+{{ super() }}
+<title>{{user.username|with_site}}</title>
+<style>
+    #avatar {
+        height: 128px;
+        width: 128px;
+    }
+
+    #avatar img {
+        height: 100%;
+        width: 100%;
+    }
+
+    .circular.segment {
+        height: 175px;
+        width: 175px;
+    }
+</style>
+{% endblock %}
+{% block content %}
+{% include "comp/header.html" %}
+<div class="ui text container" id="container">
+    <div class="ui stackable grid">
+        <div class="four wide column">
+            <div class="ui small image" id="avatar">
+              {% if user.avatar %}
+                <img src="{{ url_for('users.avatar', oid=user.avatar) }}">
+              {% else %}
+                <img src="/static/img/user.png">
+              {% endif %}
+            </div>
+        </div>
+        <div class="nine wide column">
+            <div class="ui list">
+              <div class="item">
+                <i class="users icon"></i>
+                <div class="content">{{user.username}}</div>
+              </div>
+              <div class="item">
+                <i class="marker icon"></i>
+                <div class="content">{{user.location|sifn}}</div>
+              </div>
+              <div class="item">
+                <i class="mail icon"></i>
+                <div class="content">
+                  <a href="mailto:{{user.email}}">{{user.email}}</a>
+                </div>
+              </div>
+              <div class="item">
+                <i class="linkify icon"></i>
+                <div class="content">
+                  <p>{{user.website|sifn}}</p>
+                </div>
+              </div>
+                <div class="item">
+                <i class="calendar icon"></i>
+                <div class="content">
+                  <p>{{user.join.strftime('%Y-%m-%d')|sifn}}</p>
+                </div>
+              </div>
+            </div>
+        </div>
+        {% if user._id == current_user.id %}
+            <div class="three wide column">
+                <a class="ui teal button" href="{{ url_for('users.profile_edit') }}">编辑资料</a>
+            </div>
+        {% endif %}
+    </div>
+    <h3 class="ui header">个人简介</h3>
+    <div class="ui section divider"></div>
+    <div class="content">
+        {{user.introduction|sifn}}
+    </div>
+    <h3 class="ui header">贡献度</h3>
+    <div class="ui section divider"></div>
+    <div class="ui three column grid">
+        <div class="column">
+            <div class="ui circular segment">
+              <h2 class="ui header">创建词条
+                  <div class="sub header">{{user.create_count|sifn}}</div>
+              </h2>
+            </div>
+        </div>
+        <div class="column">
+            <div class="ui circular segment">
+              <h2 class="ui header">编辑词条
+                  <div class="sub header">{{user.edit_count|sifn}}</div>
+              </h2>
+            </div>
+        </div>
+        <div class="column">
+            <div class="ui circular segment">
+              <h2 class="ui header">贡献指数
+                  <div class="sub header">{{(user.create_count *5 + user.edit_count*2)|sifn}}</div>
+              </h2>
+            </div>
+        </div>
+    </div>
+
+</div>
+{% endblock %}
+{% block js %}
+
+{% endblock %}

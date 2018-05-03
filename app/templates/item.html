@@ -1,0 +1,292 @@
+{% extends "base.html" %}
+{% block head %}
+{{ super() }}
+<title>{{ item.title|with_site }}</title>
+{% endblock %}
+{% block content %}
+{% include "comp/header.html" %}
+
+<div class="ui container" id="container">
+<table class="ui definition table">
+  <thead>
+    <tr class="center aligned">
+      <th></th>
+      <th id="title">{{ item.title }}</th>
+    </tr>
+  </thead>
+  <tbody id="attr_body">
+  <tr class="center aligned">
+    <td class="six wide">类型</td>
+    <td class="ten wide">{{ item.type }}</td>
+  </tr>
+  {% for d in item.attributes %}
+    {{ TypeRender.render_html(d.attr_name, d.attr_value, d.attr_type)|safe }}
+  {% endfor %}
+
+  </tbody>
+</table>
+    <div class="ui accordion" id="bottom_bar">
+      <div class="title">
+        <a class=" ui icon fluid teal button">
+          <i class="icon plus"></i>添加属性
+        </a>
+      </div>
+      <div class="content">
+        <div class="ui horizontal divider"><h3><i class="tag icon"></i>添加属性</h3></div>
+          <form id="add_attr" novalidate>
+            <div class="ui form">
+              <div class="inline fields">
+                <div class="field">
+                  <label>属性名</label>
+                  <input id="attr_name" type="text" placeholder="在此输入属性名..." maxlength="16" required>
+                </div>
+              </div>
+            </div>
+            <br>
+            <div id="tab">
+              <div class="ui secondary menu">
+                <a class="item red button type active" data-tab="text">文本</a>
+                <a class="item orange button type" data-tab="img">图片</a>
+                <a class="item yellow button type" data-tab="url">超链接</a>
+                <a class="item olive button type" data-tab="bool">是/否</a>
+                <a class="item green button type" data-tab="star">星级</a>
+                <a class="item teal button type" data-tab="num">数值</a>
+              </div>
+              <div id="reason" class="ui red message" style="display:none;"></div>
+              <div class="ui tab active" data-tab="text">
+                <div class="ui form">
+                  <div class="field">
+                    <textarea id="text"></textarea>
+                  </div>
+                </div>
+              </div>
+
+              <div class="ui tab" data-tab="img">
+                <div class="ui labeled fluid input">
+                  <div class="ui label">图片URL</div>
+                  <input id="img" type="url" placeholder="http://...">
+                </div>
+              </div>
+              <div class="ui tab" data-tab="url">
+                <div class="ui labeled fluid input">
+                  <div class="ui label">超链接</div>
+                  <input id="url" type="url" placeholder="http://...">
+                </div>
+              </div>
+              <div class="ui tab" data-tab="bool">
+                <div>
+                  <button id="bool" class="ui toggle button" type="button">否</button>
+                </div>
+              </div>
+              <div class="ui tab" data-tab="star">
+                <div id="star" class="ui massive star rating"></div>
+              </div>
+              <div class="ui tab" data-tab="num">
+                <div class="ui action input">
+                  <input id="num" type="number" placeholder="输入数值...">
+                  <select class="ui compact selection dropdown" id="val-type" required></select>
+                  <select class="ui compact selection dropdown" id="val-unit" required></select>
+                </div>
+              </div>
+            </div>
+            <button id="add_btn" type="submit" class="ui green button fluid" style="margin:1em 0;">添加</button>
+          </form>
+        </div>
+
+    </div>
+</div>
+
+<div class="ui small modal" id="edit_modal">
+    <div class="header">编辑属性</div>
+    <div class="content">
+      <div class="ui form">
+        <div class="field" id="edit_field">
+        </div>
+      </div>
+      <button class="ui button fluid red" id="del_btn">删除该行</button>
+    </div>
+
+  </div>
+
+{% endblock %}
+{% block js %}
+<script src="{{ url_for('static', filename='js/select.js') }}"></script>
+<script>
+    $(function(){
+      function init_type(selector) {
+        var parent = null;
+        if(selector == undefined) parent = $(document);
+        else parent = $(selector);
+
+        parent.find('#star').rating({
+            initialRating: 3,
+            maxRating: 5
+          });
+
+        parent.find('#bool').state({
+          text: {
+            inactive : '否',
+            active   : '是'
+          }
+        });
+
+        parent.find('#tab .menu .item').tab({
+          context: 'parent'
+        });
+
+        $.each(UNIT.TYPE, function(idx, type){
+           parent.find('#val-type')
+             .append($("<option></option>")
+             .attr("value",type.mapping)
+             .text(type.name));
+        });
+
+        parent.find('#val-type').on('change', function(evt){
+            parent.find('#val-unit').find('option').remove();
+            var type = evt.target.value;
+            $.each(UNIT.choose(type), function(idx, val){
+              parent.find('#val-unit')
+               .append($("<option></option>")
+               .attr("value",idx)
+               .text(val));
+            });
+        });
+
+      }
+
+      function getValue(type, selector) {
+        var attr_value = null;
+        var parent = null;
+        if(selector == undefined) parent = $(document);
+        else parent = $(selector);
+
+        if (type == 'text') attr_value = parent.find("#text").val();
+        else if (type == 'img') attr_value = parent.find("#img").val();
+        else if (type == 'url') attr_value = parent.find("#url").val();
+        else if (type == 'bool') attr_value = parent.find("#bool").hasClass('active');
+        else if (type == 'star') attr_value = parent.find('#star').rating("get rating");
+        else if (type == 'num') attr_value = parent.find('#num').val() + " " + parent.find( "#val-unit option:selected" ).text();
+        else throw new Error();
+
+        return attr_value;
+      }
+
+      // 偷个懒
+      var post_form = $("#add_attr").clone();
+
+      post_form.find("#add_btn").text("确认修改")
+
+      $(document).on('dblclick','td.attr', function(evt){
+          var element = $(this);
+          var title = $('#title').text();
+          var name = element.prev().text();
+
+
+          $('#edit_field').html(post_form);
+          var form = $('#edit_modal');
+
+          form.find('#add_attr #attr_name').val(name);
+          form.find('#add_attr #attr_name').attr('disabled', true);
+          form.find('#add_btn').on('click', function(){
+          var reason = form.find("#reason");
+          var type = form.find('.ui.tab.active').attr('data-tab');
+          var value = getValue(type, "#edit_modal");
+
+          $.ajax({
+              url: "/item/edit_attr",
+              data: JSON.stringify({
+                  "title": title,
+                  "attr_name": name,
+                  "attr_value": value,
+                  "attr_type": type
+              }),
+              type: "POST",
+              contentType:"application/json",
+              success: function(resp) {
+                if (resp.status == true) {
+                  location.reload();
+                } else {
+                  reason.html(resp.reason);
+                }
+              },
+              error: function(xhr, error, exp) {
+                alert("权限不足");
+              }
+
+          });
+        });
+
+        form.find('#del_btn').on('click', function(){
+          $.ajax({
+            url: "/item/del_attr",
+            data: JSON.stringify({
+                "title": title,
+                "attr_name": name,
+            }),
+            type: "POST",
+            contentType:"application/json",
+            success: function(resp) {
+              if(resp.status == true) {
+                location.reload();
+              } else {
+                reason.html(resp.reason);
+              }
+            },
+            error: function(xhr, error, exp) {
+              alert("权限不足");
+            }
+          });
+        });
+        // 渲染类型控件
+        init_type("#edit_modal");
+        // 淡出编辑框
+        $('#edit_modal').modal('show');
+
+      });
+
+      $('.ui.accordion').accordion({
+        onOpen: function() {
+          $("html, body").animate({ scrollTop: $("#add_btn").offset().top }, 1000);
+        }
+      });
+      // 渲染类型控件
+      init_type("#bottom_bar");
+
+      $("#add_attr").on("submit", function(ev) {
+        ev.preventDefault();
+        var active_tab = $('.ui.tab.active');
+        var title = $("#title").text();
+        var attr_name = $("#attr_name").val();
+        var type = active_tab.attr('data-tab');
+        var attr_value = getValue(type, "#bottom_bar");
+
+        if(attr_value == undefined) value = "";
+
+        $.ajax({
+          url: "/item/add_attr",
+          data: JSON.stringify({
+            "attr_name": attr_name,
+            "attr_type": type,
+            "attr_value": attr_value,
+            "title": title
+          }),
+          type: "POST",
+          contentType:"application/json",
+          success: function(resp) {
+            if (resp.status == true) {
+              $("#attr_body").append(resp.html);
+              $('#reason').css('display', 'none');
+            } else {
+              $('#reason').html(resp.reason).css('display', 'block');
+            }
+          },
+          error: function(xhr, error, exp) {
+            alert("添加失败");
+          }
+
+        });
+
+      });
+    });
+</script>
+{% endblock %}

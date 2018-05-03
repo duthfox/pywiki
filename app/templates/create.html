@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block head %}
+{{ super() }}
+<title>{{title|with_site}}</title>
+{% endblock %}
+{% block content %}
+{% include "comp/header.html" %}
+    <div class="ui container" id="container">
+      {% with messages = get_flashed_messages(with_categories=True) %}
+      {% if messages %}
+      {% for category, message in messages %}
+      <div class="ui {{category}} message">
+        <i class="close icon"></i>
+        <div class="header">{{ message }}</div>
+      </div>
+      {% endfor %}
+      {% endif %}
+      {% endwith %}
+      <form action="{{ url_for('main.create_entry') }}" method="post" class="ui form">
+            {{ entry_form.csrf_token }}
+            <div id="base">
+                <div class="ui horizontal divider"><h2><i class="tag icon"></i>基础</h2></div>
+                <div class="field">
+                  <label>{{ entry_form.title.label() }}</label>
+                  {{ entry_form.title() }}
+                </div>
+                <div class="field">
+                  <label>{{ entry_form.type.label() }}</label>
+                  <div class="ui action input">
+                      {{ entry_form.type() }}
+                      <div class="ui floating teal labeled icon dropdown button">
+                        <i class="filter icon"></i>
+                        <span class="text">选择类型</span>
+                        <div class="menu">
+                          {% for type in types %}
+                            <div class="item">
+                              {{type.name}}
+                            </div>
+                          {% endfor %}
+                        </div>
+                      </div>
+                  </div>
+                </div>
+            </div>
+            <br>
+            <button class="ui fluid teal button" type="submit">创建条目</button>
+        </form>
+
+    </div>
+{% endblock %}
+{% block js %}
+<script>
+  $(function(){
+    $('.ui.dropdown')
+      .dropdown({
+          onChange: function(value, text, $selectedItem) {
+            $('input[name=type]').val(text);
+          }
+      });
+  });
+</script>
+{% endblock %}

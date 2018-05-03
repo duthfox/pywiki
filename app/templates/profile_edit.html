@@ -1,0 +1,113 @@
+{% extends "base.html" %}
+{% block head %}
+{{ super() }}
+<title>{{title|with_site}}</title>
+<style>
+    #avatar {
+        height: 128px;
+        width: 128px;
+    }
+
+    #avatar img {
+        height: 100%;
+        width: 100%;
+    }
+
+    .circular.segment {
+        height: 175px;
+        width: 175px;
+    }
+
+    .file_input {
+        height: 100%;
+        position:absolute;
+        right:0;
+        top:0;
+        opacity: 0;
+        filter:alpha(opacity=0);
+        cursor: pointer;
+    }
+</style>
+{% endblock %}
+{% block content %}
+{% include "comp/header.html" %}
+{% with messages = get_flashed_messages(category_filter=["edit"]) %}
+  {% if messages %}
+    {% for  message in messages %}
+        <div class="ui red message msg-fixed-top" id="tip">
+          <i class="close icon"></i>
+          <div class="header">{{ message }}</div>
+        </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+<div class="ui text container" id="container">
+    <form action="" method="post" enctype="multipart/form-data">
+      <div style="text-align: center;">
+        <div class="ui small image" id="avatar">
+            <div class="ui dimmer">
+            <div class="content">
+              <div class="center">
+                <div class="ui teal button">上传头像</div>
+                <input class="file_input" type="file" name="avatar">
+              </div>
+            </div>
+          </div>
+          {% if user.avatar %}
+            <img id="avatar-img" src="{{ url_for('users.avatar', oid=user.avatar) }}">
+          {% else %}
+            <img id="avatar-img" src="/static/img/user.png">
+          {% endif %}
+        </div>
+      </div>
+
+      {{ form.csrf_token }}
+      <div class="ui form">
+        <div class="field">
+          <label>{{ form.username.label.text }}</label>
+          {{ form.username(value=user.username) }}
+        </div>
+        <div class="field">
+          <label>{{ form.location.label.text }}</label>
+          {{ form.location(value=user.location) }}
+        </div>
+        <div class="field">
+          <label>{{ form.website.label.text }}</label>
+          {{ form.website(value=user.website) }}
+        </div>
+        <div class="field">
+          <label>{{ form.introduction.label.text }}</label>
+          {% set f = form.introduction.process_data(user.introduction) %}
+          {{ form.introduction(rows=2) }}
+        </div>
+        <button type="submit" class="ui fluid teal button">提交修改</button>
+      </div>
+    </form>
+</div>
+{% endblock %}
+{% block js %}
+<script>
+    $(function(){
+        $('#avatar')
+            .dimmer({
+            on: 'hover'
+        });
+
+        function readURL(input) {
+          if (input.files && input.files[0]) {
+              var reader = new FileReader();
+
+              reader.onload = function (e) {
+                  $('#avatar-img').attr('src', e.target.result);
+              }
+
+              reader.readAsDataURL(input.files[0]);
+          }
+      }
+
+        $("input[name=avatar]").on('change', function(evt) {
+            readURL(this);
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+  <meta name="description" content="提供搜索服务。通过wiki，你可以清晰地查看物品的属性，更重要的是，:你可以创建知识词条，方便自己和他人的使用，快向世界分享你的知识吧!" />
+  <meta name="keywords" content="pkyx,pk一下,比较,compare,comparison,wiki"/>
+  <meta name ="viewport" content ="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+<link href="http://cdn.bootcss.com/semantic-ui/2.1.6/semantic.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+  <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    {% block head %}
+    {% endblock %}
+</head>
+<body>
+{% block content %}
+{% endblock %}
+<div class="ui page dimmer">
+  <div class="content">
+    <div class="center">
+      <img class="ui image centered" src="http://7sbqim.com1.z0.glb.clouddn.com/pkyxlogo.png" alt="pkyx logo">
+      <br>
+        <p>pkyx是基于Flask开发的一个维基网站。</p>
+        <p>通过pkyx，你可以清晰地查看物品的属性，更重要的是，你可以创建知识词条，方便自己和他人的使用，快向世界分享你的知识吧!</p>
+    </div>
+  </div>
+</div>
+</body>
+<script src="http://cdn.bootcss.com/jquery/2.1.4/jquery.min.js"></script>
+<script src="http://cdn.bootcss.com/semantic-ui/2.1.6/semantic.min.js"></script>
+<script>
+    $(function(){
+        $('.message .close').on('click', function() {
+            $(this)
+              .closest('.message')
+              .transition('fade');
+          });
+        $('#what').on('click', function(){
+          $('.dimmer').dimmer('show');
+        });
+    });
+</script>
+{% block js %}
+{% endblock %}
+</html>

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block head %}
+{{ super() }}
+<title>{{title|with_site}}</title>
+{% endblock %}
+{% block content %}
+{% include "comp/header.html" %}
+<div class="ui container" id="container">
+    {% with messages = get_flashed_messages(category_filter=["search", "explore"]) %}
+        {% if messages %}
+          {% for  message in messages %}
+              <div class="ui red message">
+                <i class="close icon"></i>
+                <div class="header">{{ message }}</div>
+              </div>
+          {% endfor %}
+        {% endif %}
+    {% endwith %}
+    <div class="ui six doubling cards">
+        {% for item in items %}
+            <div class="ui card">
+              <div class="content">
+               <a href="{{ url_for('main.item', title=item.title) }}" style="color:inherit;">
+                  <div class="header">
+                     <div class="ui teal large header">{{item.title}}</div>
+                  </div>
+                  <div class="meta">{{ item.created_at.strftime('%Y-%m-%d') }}</div>
+                  <div class="description">
+                    {{ item.type }}
+                  </div>
+                 </a>
+              </div>
+            </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
+{% block js %}
+
+{% endblock %}

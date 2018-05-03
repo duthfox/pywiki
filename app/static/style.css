@@ -1,0 +1,44 @@
+body {
+    font-family: Helvetica, Tahoma, Arial, "Microsoft YaHei", "微软雅黑", SimSun, "宋体", STXihei, "华文细黑", Heiti, "黑体", sans-serif;
+}
+
+.WARNING {
+    color: rgb(236, 204, 56);
+}
+
+.ERROR {
+    color: #ff615f;
+}
+
+.SUCCESS {
+    color: #578037;
+}
+
+div {display:block;}
+
+body {
+  background-color: #f1f5f8;
+}
+
+#container {
+    background-color: #ffffff;
+    min-height: 500px;
+    padding: 1em;
+    margin-top: 100px;
+}
+
+#header {
+    border-bottom: 1px solid #010101;
+    box-shadow: 0 1px 2px rgba(0,0,0,.25),inset 0 1px 0 rgba(255,255,255,.15);
+}
+
+.msg-fixed-top {
+    position: absolute !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    left: 0;
+    right: 0;
+    width:50%;
+    top: 10%;
+    z-index: 10000;
+}

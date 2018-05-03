@@ -1,0 +1,24 @@
+<div class="ui modal">
+  <i class="close icon"></i>
+  <div class="header">
+    登录到wiki
+  </div>
+  <div class="content">
+    <p>还没有账号?<a href="{{ url_for('users.register') }}">点此</a>注册</p>
+      <div class="ui ignored error message" id="error" style="display:none;"></div>
+      <div class="ui ignored positive message" id="success" style="display:none;"></div>
+      <form class="ui form" id="lg_form">
+          {{ lg_form.csrf_token }}
+          <div class="field">
+              <label>{{ lg_form.email.label() }}</label>
+              {{ lg_form.email() }}
+          </div>
+          <div class="field">
+              <label>{{ lg_form.password.label() }}</label>
+              {{ lg_form.password() }}
+          </div>
+          <button type="submit" class="fluid ui teal button" id="sign_in">登录</button>
+      </form>
+      <br>
+  </div>
+</div>
