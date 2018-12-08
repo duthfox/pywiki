@@ -3,15 +3,15 @@ import os
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 class BaseConfig:
-    SECRET_KEY = '693bda65112eb4b1eab2bfe3fa8e672ad220fa7c'
+    SECRET_KEY = '*********************'
     UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads')
     MAIL_SUBJECT_PREFIX = '[PYWIKI]'
-    MAIL_SERVER = 'smtp.163.com'
+    MAIL_SERVER = 'smtp.xxx.com'
     MAIL_PORT = 465
     MAIL_USE_SSL = True
-    MAIL_USERNAME = 'g1226cl@163.com' 
-    MAIL_PASSWORD = 'g1226cl'
-    MAIL_DEFAULT_SENDER = 'g1226cl@163.com'
+    MAIL_USERNAME = 'xxx@xxx.com' 
+    MAIL_PASSWORD = 'xxx'
+    MAIL_DEFAULT_SENDER = 'xxxx@xxx.com'
 
     @staticmethod
     def init_app(app):
